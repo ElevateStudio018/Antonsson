@@ -11,7 +11,7 @@ import html
 import json
 import pathlib
 import sys
-from urllib.parse import quote_plus
+from urllib.parse import quote, quote_plus
 
 OUT = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else "docs")
 
@@ -40,11 +40,39 @@ FORM_EMAIL = "elevate.studio018@gmail.com"
 
 SITE_URL = "https://elevatestudio018.github.io/Antonsson/"
 
+# --- Photos: from Wikimedia Commons (taken in Sweden) and Pexels. CC BY / CC BY-SA require the credit shown on the page. ----
+COMMONS = "https://commons.wikimedia.org/wiki/File:"
+CREDITS = {
+    "hero-grav": ("Excavators RV68 02.jpg", "Calle Eklund/V-wolf", "CC BY 3.0", "https://creativecommons.org/licenses/by/3.0", "Vägbygge längs riksväg 68"),
+    "intro": ("Bygget av Västlänken vid Almedal 01.jpg", "Mattias Blomgren", "CC BY-SA 4.0", "https://creativecommons.org/licenses/by-sa/4.0", "Västlänken vid Almedal, Göteborg"),
+    "om-oss": ("Digger outside a house in Brodalen.jpg", "W.carter", "CC BY-SA 4.0", "https://creativecommons.org/licenses/by-sa/4.0", "Grävmaskin vid ett rött hus i Brodalen, Bohuslän"),
+    "va": ("Norsborgs vattenledning 2014.jpg", "Holger.Ellgaard", "CC BY-SA 4.0", "https://creativecommons.org/licenses/by-sa/4.0", "Ny vattenledning vid Norsborg"),
+    "dranering": ("pexels:9389356", "Pexels", "Pexels-licens", "https://www.pexels.com/license/", "Rör monteras"),
+    "husgrund": ("pexels:26107204", "Pexels", "Pexels-licens", "https://www.pexels.com/license/", "Gjutning av grund"),
+    "parkering": ("pexels:16239805", "Pexels", "Pexels-licens", "https://www.pexels.com/license/", "Marksten läggs"),
+    "stenmur": ("pexels:6156557", "Pexels", "Pexels-licens", "https://www.pexels.com/license/", "Mur i natursten"),
+    "schakt": ("pexels:28442180", "Pexels", "Pexels-licens", "https://www.pexels.com/license/", "Grävmaskin och dumper"),
+    "infrastruktur": ("pexels:19394246", "Pexels", "Pexels-licens", "https://www.pexels.com/license/", "Vägbygge"),
+    "uthyrning": ("pexels:95687", "Pexels", "Pexels-licens", "https://www.pexels.com/license/", "Grävmaskin i skogen"),
+}
+
+
+def source(f):
+    return f"https://www.pexels.com/photo/{f[7:]}/" if f.startswith("pexels:") else COMMONS + quote(f.replace(" ", "_"))
+
+
+def credit(src):
+    f, who, lic, _, _ = CREDITS[src]
+    if f.startswith("pexels:"):
+        return f'<a href="{source(f)}" target="_blank" rel="noopener">Foto: Pexels</a>'
+    return f'<a href="{COMMONS}{quote(f.replace(" ", "_"))}" target="_blank" rel="noopener">Foto: {E(who)}, {lic}</a>'
+
+
 # --- Services (suggestions – confirm with Antonsson) ---------------------------------------------------------------
 SERVICES = [
     dict(
         slug="va-arbeten", title="VA-arbeten", photo="va", pos="50% 50%",
-        alt="Grå avloppsrör staplade på en byggarbetsplats",
+        alt="Nya vattenledningar läggs i ett öppet schakt vid Norsborg",
         short="Nya ledningar, byten och renoveringar av vatten och avlopp.",
         body=[
             "Vi gör VA-arbeten för villor, fastigheter och företag – nyanläggning, renovering eller byte av vatten- och avloppsledningar.",
@@ -54,7 +82,7 @@ SERVICES = [
                "Schakt, rörläggning och återfyllning", "Återställning av mark och ytor"],
     ),
     dict(
-        slug="draneringar", title="Dräneringar", photo="dranering", pos="50% 50%",
+        slug="draneringar", title="Dräneringar", photo="dranering", pos="50% 60%",
         alt="Gult rör monteras med hydraulverktyg",
         short="Torr grund och tomt – dränering runt hus, gårdar och ytor.",
         body=[
@@ -167,8 +195,8 @@ def img(src, alt="", pos="50% 50%", sizes="100vw", lazy=True):
 
 
 def photo(src, alt, pos="50% 50%", sizes="(min-width: 960px) 50vw, 100vw"):
-    """A rounded photo with the note that it is a stock photo, not from Antonsson's own projects."""
-    return f'<figure class="ph">{img(src, alt, pos, sizes)}<figcaption>Illustrationsbild</figcaption></figure>'
+    """A photo with its credit (photographer and licence); not from Antonsson's own projects."""
+    return f'<figure class="ph">{img(src, alt, pos, sizes)}<figcaption>{credit(src)}</figcaption></figure>'
 
 
 # Antonsson's own logo (docs/img/logo.png, with a WebP copy for browsers that take it).
@@ -229,7 +257,7 @@ def footer(home):
       <div><p class="foot-h">{SHORT}</p><ul>{"".join(f'<li><a href="{pre}#{a}">{t}</a></li>' for a, t in NAV)}<li><a href="{pre}#offert">Begär offert</a></li></ul></div>
     </div>
     <div class="foot-end">
-      <span>© <span data-year>2026</span> {NAME} · Bilderna är stockfoton från Pexels</span>
+      <span>© <span data-year>2026</span> {NAME} · <a href="bildkallor.html">Bildkällor</a></span>
       <a href="https://elevatestudio.nu" target="_blank" rel="noopener">Byggd av Elevate Studio</a>
     </div>
   </div>
@@ -270,7 +298,7 @@ def page(name, title, desc, main, home=False, image="hero-grav"):
 <meta property="og:image" content="{SITE_URL}img/{image}.jpg">
 <meta name="theme-color" content="#ffffff">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="assets/site.css?v={ver("assets/site.css")}">
 <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
 {jsonld() if home else ''}
@@ -284,9 +312,24 @@ def page(name, title, desc, main, home=False, image="hero-grav"):
     (OUT / name).write_text(doc, encoding="utf-8")
 
 
-def card(s):
-    return (f'<li class="card"><a href="tjanst-{s["slug"]}.html">{photo(s["photo"], s["alt"], s["pos"], "(min-width: 960px) 33vw, 100vw")}'
-            f'<h3>{s["title"]}</h3><p>{s["short"]}</p><span class="more">Läs mer</span></a></li>')
+def card(s, n):
+    return (f'<li class="card"><a href="tjanst-{s["slug"]}.html"><div class="card-ph">{img(s["photo"], s["alt"], s["pos"], "(min-width: 960px) 33vw, 100vw")}'
+            f'<span class="num">{n:02d}</span></div><div class="card-body"><h3>{s["title"]}</h3><p>{s["short"]}</p>'
+            f'<span class="more">Läs mer <span aria-hidden="true">→</span></span></div></a></li>')
+
+
+def hero(src, alt, pos, kicker, title, text, btns, extra="", small=False, hid="hero-h"):
+    """Split hero: text on graphite to the left, the photo to the right (photo on top on phones)."""
+    return f'''<section class="hero{' hero-small' if small else ''}" aria-labelledby="{hid}">
+  <div class="hero-txt"><div class="hero-in">
+    {kicker}
+    <h1 id="{hid}">{title}</h1>
+    <p class="hero-lead">{text}</p>
+    <div class="btns">{btns}</div>
+    {extra}
+  </div></div>
+  <figure class="hero-ph">{img(src, alt, pos, "(min-width: 960px) 50vw, 100vw", lazy=False)}<figcaption>{credit(src)}</figcaption></figure>
+</section>'''
 
 
 def also_pills(skip=None):
@@ -316,84 +359,101 @@ def quote_form():
 
 # --- Start page -----------------------------------------------------------------------------------------------------
 def index():
-    cards = "".join(card(s) for s in CARDS)
+    cards = "".join(card(s, i + 1) for i, s in enumerate(CARDS))
     steps = "".join(f"<li><b>{t}</b> {d}</li>" for t, d in STEPS)
     faq = "".join(f"<details><summary>{q}</summary><p>{a}</p></details>" for q, a in FAQ)
     hire = "".join(f"<li>{m}</li>" for m in HIRE)
-    trust = "".join(f"<li>{t}</li>" for t in [f"Medlem i Maskinentreprenörerna sedan {MEMBER_SINCE}",
-                                              "Kollektivavtal: Entreprenadmaskinavtalet", "Kollektivavtal: Tjänstemän",
-                                              f"Org.nr {ORG_NR}"])
+    facts = "".join(f"<li><b>{b}</b><span>{t}</span></li>" for b, t in [
+        (MEMBER_SINCE, "Medlem i Maskinentreprenörerna"), ("Kollektivavtal", "Entreprenadmaskin & Tjänstemän"),
+        ("Olskroken", "Bas mitt i Göteborg")])
     intro_links = " ".join(f'<a class="pill pill-dark" href="tjanst-{s["slug"]}.html">{s["title"]}</a>' for s in CARDS[:3])
 
-    main = f'''<section class="hero" id="top" aria-labelledby="hero-h">
-  <div class="hero-ph">{img("hero-grav", "Grävmaskin på en arbetsplats", "60% 50%", lazy=False)}</div>
-  <div class="wrap hero-in">
-    <h1 id="hero-h">Markarbeten och maskintjänster i Göteborg</h1>
-    <p>{SHORT} gräver, dränerar och bygger grunder åt både företag och privatpersoner – i Göteborg med omnejd.</p>
-    <div class="btns">{call_btn()}<a class="pill pill-dark" href="#offert">Begär offert</a></div>
-  </div>
-  <span class="hero-note">Illustrationsbild</span>
-</section>
+    top = hero("hero-grav", "Grävmaskiner och grushögar vid ett vägbygge i svensk skog", "40% 50%",
+               '<p class="kicker">Maskinentreprenör i Göteborg</p>',
+               "Markarbeten och maskintjänster i Göteborg",
+               f"{SHORT} gräver, dränerar och bygger grunder åt både företag och privatpersoner – i Göteborg med omnejd.",
+               f'{call_btn()}<a class="pill pill-line" href="#offert">Begär offert</a>',
+               f'<ul class="hero-facts">{facts}</ul>')
+    main = f'''<div id="top"></div>
+{top}
 
-<section class="trust" aria-label="Om företaget">
-  <div class="wrap"><ul>{trust}</ul></div>
-</section>
-
-<section class="sec" aria-labelledby="intro-h">
-  <div class="wrap split">
-    {photo("intro", "Grävmaskin på en byggarbetsplats i stan")}
-    <div>
-      <h2 id="intro-h">Från första spadtaget till färdig yta</h2>
-      <p class="lead">VA-arbeten, dräneringar, husgrunder, parkeringsytor, sten- och murarbeten, schakt och transport samt vägar. Vi tar jobbet hela vägen – och lämnar tomten städad efter oss.</p>
-      <div class="btns">{intro_links}</div>
-    </div>
-  </div>
-</section>
-
-<section class="sec tint" id="tjanster" aria-labelledby="tj-h">
+<section class="sec" id="tjanster" aria-labelledby="tj-h">
   <div class="wrap">
-    <h2 id="tj-h">Våra tjänster</h2>
+    <div class="sec-head">
+      <div><p class="kicker">Tjänster</p><h2 id="tj-h">Det här gör vi</h2></div>
+      <p class="lead">Sex vanliga markjobb – och fler under ”Vi utför också”. Klicka på en tjänst för att läsa mer.</p>
+    </div>
     <ul class="cards">{cards}</ul>
     <h3 class="also-h">Vi utför också</h3>
     <div class="btns">{also_pills()}</div>
   </div>
 </section>
 
+<section class="sec tint" aria-labelledby="intro-h">
+  <div class="wrap split">
+    <div>
+      <p class="kicker">Hela vägen</p>
+      <h2 id="intro-h">Från första spadtaget till färdig yta</h2>
+      <p class="lead">VA-arbeten, dräneringar, husgrunder, parkeringsytor, sten- och murarbeten, schakt och transport samt vägar. Vi tar jobbet hela vägen – och lämnar tomten städad efter oss.</p>
+      <div class="btns">{intro_links}</div>
+    </div>
+    {photo("intro", CREDITS["intro"][4])}
+  </div>
+</section>
+
 <section class="sec band" id="maskin" aria-labelledby="ut-h">
-  <div class="wrap narrow center">
-    <h2 id="ut-h">Maskin med förare – per timme eller dag</h2>
-    <p class="lead">Behöver du bara en maskin och någon som kan köra den? Vi kommer ut och hjälper till.</p>
-    <ul class="machines">{hire}</ul>
-    <div class="btns">{call_btn()}<a class="pill pill-light" href="tjanst-maskin-med-forare.html">Läs mer</a></div>
+  <div class="wrap split">
+    {photo("uthyrning", "Svensktillverkad Åkerman-grävmaskin på en arbetsplats")}
+    <div>
+      <p class="kicker">Maskin med förare</p>
+      <h2 id="ut-h">Per timme eller per dag</h2>
+      <p class="lead">Behöver du bara en maskin och någon som kan köra den? Vi kommer ut och hjälper till.</p>
+      <ul class="machines">{hire}</ul>
+      <div class="btns">{call_btn()}<a class="pill pill-light" href="tjanst-maskin-med-forare.html">Läs mer</a></div>
+    </div>
   </div>
 </section>
 
 <section class="sec" id="om-oss" aria-labelledby="om-h">
   <div class="wrap split">
-    {photo("om-oss", "Grävmaskin i snö framför granskog")}
     <div>
+      <p class="kicker">Om oss</p>
       <h2 id="om-h">Ett lokalt maskinföretag från Olskroken</h2>
       <p class="lead">{NAME} är ett mark- och maskinföretag med bas i Olskroken i Göteborg. Vi har kollektivavtal och är medlemmar i Maskinentreprenörerna sedan {MEMBER_SINCE}. Vi planerar noggrant, håller det vi lovar och följer upp arbetet tills det är klart.</p>
       <h3>Så går det till</h3>
       <ol class="steps">{steps}</ol>
       <div class="btns">{call_btn()}</div>
     </div>
+    {photo("om-oss", "Grävmaskin vid ett rött trähus på västkusten")}
   </div>
 </section>
 
-<section class="sec tint" id="kontakt" aria-labelledby="kt-h">
+<section class="sec tint" id="fragor" aria-labelledby="fq-h">
   <div class="wrap narrow">
-    <h2 id="kt-h">Bli kontaktad av {SHORT}</h2>
-    <p class="lead">Fyll i formuläret så hör vi av oss. Vill du hellre ringa eller mejla går det lika bra: <a href="mailto:{EMAIL}">{EMAIL}</a>.</p>
-    <div class="btns">{call_btn()}</div>
-    <div id="offert">{quote_form()}</div>
-  </div>
-</section>
-
-<section class="sec" id="fragor" aria-labelledby="fq-h">
-  <div class="wrap narrow">
+    <p class="kicker">Frågor och svar</p>
     <h2 id="fq-h">Vanliga frågor</h2>
     <div class="faq">{faq}</div>
+  </div>
+</section>
+
+<section class="sec" id="kontakt" aria-labelledby="kt-h">
+  <div class="wrap contact">
+    <aside class="contact-card">
+      <p class="kicker">Kontakt</p>
+      <h2 id="kt-h">Prata med {SHORT}</h2>
+      <p>Fyll i formuläret så hör vi av oss – eller ring direkt.</p>
+      <dl>
+        <dt>Telefon</dt><dd><a href="tel:{TEL}">{PHONE}</a></dd>
+        <dt>E-post</dt><dd><a href="mailto:{EMAIL}">{EMAIL}</a></dd>
+        <dt>Adress</dt><dd>{STREET}<br>{POSTAL} {CITY}</dd>
+        <dt>Org.nr</dt><dd>{ORG_NR}</dd>
+      </dl>
+      <div class="btns">{call_btn()}</div>
+    </aside>
+    <div id="offert">
+      <h3>Begär offert</h3>
+      {quote_form()}
+    </div>
   </div>
 </section>
 
@@ -420,18 +480,13 @@ def index():
 def service_page(s):
     items = "".join(f"<li>{i}</li>" for i in s["items"])
     body = "".join(f"<p>{p}</p>" for p in s["body"])
-    others = "".join(card(o) for o in [o for o in CARDS if o["slug"] != s["slug"]][:3])
+    others = "".join(card(o, i + 1) for i, o in enumerate([o for o in CARDS if o["slug"] != s["slug"]][:3]))
     offer = f'index.html?typ={quote_plus(s["title"])}#offert'
-    main = f'''<section class="hero hero-small" aria-labelledby="ph-h">
-  <div class="hero-ph">{img(s["photo"], s["alt"], s["pos"], lazy=False)}</div>
-  <div class="wrap hero-in">
-    <nav class="crumbs" aria-label="Brödsmulor"><a href="index.html">Start</a> / <a href="index.html#tjanster">Tjänster</a> / <span aria-current="page">{s["title"]}</span></nav>
-    <h1 id="ph-h">{s["title"]} i Göteborg</h1>
-    <p>{s["short"]}</p>
-    <div class="btns">{call_btn()}<a class="pill pill-dark" href="{offer}">Begär offert</a></div>
-  </div>
-  <span class="hero-note">Illustrationsbild</span>
-</section>
+    top = hero(s["photo"], s["alt"], s["pos"],
+               f'<nav class="crumbs" aria-label="Brödsmulor"><a href="index.html">Start</a> / <a href="index.html#tjanster">Tjänster</a> / <span aria-current="page">{s["title"]}</span></nav>',
+               f'{s["title"]} i Göteborg', s["short"], f'{call_btn()}<a class="pill pill-line" href="{offer}">Begär offert</a>',
+               small=True, hid="ph-h")
+    main = f'''{top}
 <section class="sec">
   <div class="wrap narrow prose">
     <h2>{s["title"]} med {SHORT}</h2>
@@ -453,6 +508,20 @@ def service_page(s):
     page(f'tjanst-{s["slug"]}.html', f'{s["title"]} i Göteborg | {NAME}', desc, main, image=s["photo"])
 
 
+def credits_page():
+    rows = "".join(
+        f'<li><img src="img/{k}-s.jpg" alt="" loading="lazy"><div><b>{E(c[4])}</b><br>Foto: {E(c[1])} · '
+        f'<a href="{c[3]}" target="_blank" rel="noopener">{c[2]}</a> · <a href="{source(c[0])}" target="_blank" rel="noopener">Källa</a></div></li>'
+        for k, c in CREDITS.items())
+    main = f'''<section class="sec"><div class="wrap narrow prose">
+  <p class="kicker">Bildkällor</p>
+  <h1>Bilderna på sidan</h1>
+  <p>Fotona kommer från Wikimedia Commons och Pexels och används under fria licenser. De visar inte {SHORT}s egna projekt.</p>
+  <ul class="credits">{rows}</ul>
+</div></section>'''
+    page("bildkallor.html", f"Bildkällor | {NAME}", "Fotografer och licenser för bilderna på sidan.", main)
+
+
 def not_found():
     main = f'<section class="sec"><div class="wrap narrow"><h1>Sidan finns inte</h1><div class="btns"><a class="pill pill-dark" href="index.html">Till startsidan</a>{call_btn()}</div></div></section>'
     page("404.html", f"Sidan finns inte | {NAME}", "Sidan kunde inte hittas.", main)
@@ -471,6 +540,7 @@ if __name__ == "__main__":
     index()
     for s in SERVICES:
         service_page(s)
+    credits_page()
     not_found()
     seo_files()
     print("Byggde", len(list(OUT.glob("*.html"))), "sidor i", OUT)

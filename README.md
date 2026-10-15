@@ -54,7 +54,7 @@ automatiskt (`index.html?typ=…#offert`).
 
 ## Bilder
 
-Alla foton i `docs/img/` (utom loggan och favicon) är stockbilder från [Pexels](https://www.pexels.com), samma som på
+Fyra foton (hero, intro, om oss, VA) är svenska bilder från Wikimedia Commons; fotograf och licens visas på bilden och på `bildkallor.html` (`CREDITS` i `scripts/build.py`). Övriga foton är stockbilder från [Pexels](https://www.pexels.com), samma som på
 Ohan-sajten, och märks som illustrationsbilder. Byt mot Antonssons egna bilder genom att ersätta filerna med samma namn
 (både `namn.jpg`, 1800 px bred, och `namn-s.jpg`, 800 px bred).
 
