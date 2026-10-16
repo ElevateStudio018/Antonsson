@@ -234,9 +234,6 @@ def footer(home):
         <p>{STREET},<br>{POSTAL} {CITY}</p>
         <p><a href="tel:{TEL}">{PHONE}</a></p>
         <p><a href="mailto:{EMAIL}">{EMAIL}</a></p>
-        <p>Org.nr {ORG_NR}</p>
-        <p>Kollektivavtal: {AGREEMENTS}</p>
-        <p>Medlem i Maskinentreprenörerna sedan {MEMBER_SINCE}</p>
       </div>
       <div><p class="foot-h">Tjänster</p><ul>{svc}</ul></div>
       <div><p class="foot-h">{SHORT}</p><ul>{"".join(f'<li><a href="{pre}#{a}">{t}</a></li>' for a, t in NAV)}<li><a href="{pre}#offert">Begär offert</a></li></ul></div>
@@ -337,8 +334,6 @@ def index():
                     f"<h3>{t}</h3><p>{d}</p></li>" for i, (t, d) in enumerate(STEPS))
     faq = "".join(f"<details><summary>{q}</summary><p>{a}</p></details>" for q, a in FAQ)
     hire = "".join(f"<li>{m}</li>" for m in HIRE)
-    stats = "".join(f"<li><b>{n}</b><span>{t}</span></li>" for n, t in [
-        (MEMBER_SINCE, "Medlem i Maskinentreprenörerna"), ("2", "Kollektivavtal"), (str(len(SERVICES)), "Tjänster inom mark och maskin")])
     intro_links = " ".join(f'<a class="pill pill-dark" href="tjanst-{s["slug"]}.html">{s["title"]}</a>' for s in CARDS[:3])
 
     main = f'''<section class="hero" id="top" aria-labelledby="hero-h">
@@ -359,13 +354,6 @@ def index():
     <ul class="cards">{cards}</ul>
     <h3 class="also-h">Vi utför också</h3>
     <div class="btns">{also_pills()}</div>
-  </div>
-</section>
-
-<section class="stats" aria-labelledby="st-h">
-  <div class="wrap">
-    <h2 id="st-h">Antonsson i siffror</h2>
-    <ul>{stats}</ul>
   </div>
 </section>
 
@@ -423,7 +411,6 @@ def index():
         <li>{IC_MAIL}<div><small>E-post</small><a href="mailto:{EMAIL}">{EMAIL}</a></div></li>
         <li>{IC_PIN}<div><small>Adress</small>{ADDR}</div></li>
       </ul>
-      <p class="small">Org.nr {ORG_NR}</p>
       <div class="btns">{call_btn()}</div>
     </div>
     <div class="form-card" id="offert">
