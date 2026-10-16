@@ -12,12 +12,14 @@
   --accent-2: #005a99;
   --accent-soft: #e6f0f8;
   --tint: #f3f5f7;
+  --sand: #e9e7df;
+  --surface: #f4f2ec;
   --line: #cfcfcf;
   --white: #ffffff;
   --error: #c0262d;
   --wrap: 1200px;
   --head-h: 84px;
-  --font: "Plus Jakarta Sans", "Helvetica Neue", Arial, sans-serif;
+  --font: "Figtree", "Helvetica Neue", Arial, sans-serif;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -231,6 +233,103 @@ button { font: inherit; color: inherit; }
 .foot ul a:hover { text-decoration: underline; }
 .foot-end { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; margin-top: 56px; padding-top: 20px; border-top: 1px solid rgb(255 255 255 / .15); font-size: 14px; color: #a3a3a3; }
 .foot-end a { color: #a3a3a3; }
+
+/* ---- Mix with the Markmontage site: warm sand background, light surface cards with square corners,
+   "LÄS MER OM …" labels, a figures band, a dark text box over a wide photo, step cards and a contact list ---- */
+body { background: var(--sand); }
+h1, h2, h3 { font-weight: 600; letter-spacing: -0.025em; }
+.surface { background: var(--surface); }
+.tint { background: var(--surface); }
+.sub { margin-top: 12px; color: var(--muted); }
+.lead-b { margin-top: 24px; font-size: clamp(20px, 1.8vw, 23px); font-weight: 600; line-height: 1.4; color: var(--ink); }
+.lead-b + p { margin-top: 14px; }
+.chev { width: 16px; height: 16px; flex: none; }
+.eyebrow { margin-bottom: 16px; font-size: 13px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: rgb(255 255 255 / .85); }
+.small-link { display: inline-flex; align-items: center; gap: 4px; margin-top: 10px; font-size: 14px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink); text-decoration: none; }
+.small-link:hover { color: var(--accent); }
+.pill-outline { background: transparent; color: #fff; border: 1.5px solid rgb(255 255 255 / .7); min-height: 50px; padding: 10px 24px; font-size: 15px; letter-spacing: .06em; text-transform: uppercase; }
+.pill-outline:hover { background: rgb(255 255 255 / .08); border-color: #fff; }
+.ph img { border-radius: 4px; }
+
+/* Service cards */
+.cards { gap: 16px; margin-top: 36px; }
+@media (min-width: 1100px) { .cards { grid-template-columns: repeat(3, 1fr); } }
+.card a { display: flex; flex-direction: column; height: 100%; background: var(--surface); transition: box-shadow .15s; }
+.card a:hover { box-shadow: 0 14px 30px rgb(0 0 0 / .08); }
+.card .ph img { border-radius: 0; aspect-ratio: 16 / 11; }
+.card-body { display: flex; flex-direction: column; flex: 1; padding: 22px 24px 26px; }
+.card h3 { margin-top: 0; font-size: 22px; }
+.card .more { display: inline-flex; align-items: center; gap: 4px; margin-top: auto; padding-top: 18px; font-size: 14px; letter-spacing: .08em; text-transform: uppercase; text-decoration: none; }
+.card a:hover .more { color: var(--accent); }
+.also-h { margin-top: 48px; }
+
+/* Figures band */
+.stats { padding: 64px 0; background: var(--dark); color: #fff; text-align: center; }
+.stats h2 { color: rgb(255 255 255 / .92); font-size: clamp(26px, 2.6vw, 34px); font-weight: 500; }
+.stats ul { display: grid; gap: 32px; margin-top: 36px; }
+@media (min-width: 760px) { .stats ul { grid-template-columns: repeat(3, 1fr); } }
+.stats b { display: block; font-size: clamp(48px, 5vw, 64px); font-weight: 700; line-height: 1; letter-spacing: -0.02em; }
+.stats span { display: block; margin-top: 8px; font-size: 16px; color: rgb(255 255 255 / .75); }
+
+/* Dark text box overlapping a wide photo */
+.feature { position: relative; }
+.feature-ph img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.feature-box { position: relative; margin: -48px 16px 0; padding: 32px 28px; background: var(--dark); color: #fff; }
+.feature-box h2 { color: #fff; font-size: clamp(28px, 2.8vw, 38px); }
+.feature-box > p { margin-top: 14px; color: rgb(255 255 255 / .85); }
+.feature-box .machines { justify-content: flex-start; margin-top: 22px; gap: 8px; }
+.feature-box .machines li { padding: 8px 14px; border-radius: 999px; background: rgb(255 255 255 / .08); color: #fff; border: 1px solid rgb(255 255 255 / .25); font-size: 15px; font-weight: 600; }
+.feature-box .btns { margin-top: 26px; }
+@media (min-width: 960px) {
+  .feature-ph img { aspect-ratio: 21 / 9; }
+  .feature-box { position: absolute; left: 80px; bottom: -64px; width: min(520px, 46%); margin: 0; padding: 40px 44px; }
+  .feature-sec { padding-bottom: 168px; }
+}
+
+/* About: text left, photo right */
+@media (min-width: 960px) { .split-rev { grid-template-columns: 1.2fr 1fr; } }
+
+/* Steps as cards with an icon and a large pale number */
+.steps { counter-reset: none; display: grid; gap: 16px; margin-top: 36px; }
+@media (min-width: 760px) { .steps { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1100px) { .steps { grid-template-columns: repeat(4, 1fr); } }
+.steps li { padding: 26px 24px 30px; background: var(--surface); border-top: 3px solid var(--dark); }
+.steps li::before { content: none; }
+.step-top { display: flex; justify-content: space-between; align-items: center; }
+.step-ic { display: grid; place-items: center; width: 44px; height: 44px; background: var(--dark); color: #fff; }
+.step-ic .ic { width: 22px; height: 22px; }
+.step-n { font-size: 40px; font-weight: 600; color: #cfccc3; line-height: 1; }
+.steps h3 { margin-top: 22px; font-size: 21px; }
+.steps p { margin-top: 10px; font-size: 16px; color: var(--muted); }
+
+/* Contact: details with icons on the left, the form in a card on the right */
+.contact { display: grid; gap: 40px; align-items: start; }
+@media (min-width: 960px) { .contact { grid-template-columns: 1fr 1fr; gap: 64px; } }
+.contact-list { display: grid; gap: 22px; margin-top: 32px; }
+.contact-list li { display: flex; gap: 16px; align-items: flex-start; }
+.contact-list .ic { width: 26px; height: 26px; flex: none; margin-top: 4px; color: var(--ink); }
+.contact-list small { display: block; font-size: 14px; color: var(--muted); }
+.contact-list a, .contact-list div { font-size: 19px; font-weight: 600; color: var(--ink); text-decoration: none; }
+.contact-list small + a, .contact-list small { font-weight: 500; }
+.contact-list a { font-weight: 600; }
+.contact .small { margin-top: 24px; }
+.form-card { padding: 32px 24px; background: var(--surface); }
+@media (min-width: 700px) { .form-card { padding: 40px; } }
+.form-card h3 { font-size: 24px; }
+.form-card .form { margin-top: 24px; gap: 18px; }
+.form-card .field input, .form-card .field select, .form-card .field textarea { border-radius: 4px; border-color: #d6d3ca; }
+.form-card .pill-dark { width: 100%; }
+.form-card .done { background: #fff; border-radius: 4px; margin-top: 24px; }
+
+/* FAQ on the light surface */
+.faq { border-top-color: #d6d3ca; }
+.faq details { border-bottom-color: #d6d3ca; }
+.faq summary::after { border-radius: 4px; background: var(--dark); }
+
+/* Map with an address bar under it */
+.map-bar { background: #fff; }
+.map-bar .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; padding-top: 18px; padding-bottom: 18px; font-size: 16px; }
+.map-bar a { display: inline-flex; align-items: center; gap: 4px; font-size: 14px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; text-decoration: none; color: var(--ink); }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

@@ -161,6 +161,20 @@ PHONE_ICON = ('<svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentCo
               '<path d="M15 2.5a6.5 6.5 0 0 1 6.5 6.5M15 6a3 3 0 0 1 3 3"/></svg>')
 
 
+def icon(paths):
+    return ('<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" '
+            f'stroke-linejoin="round" aria-hidden="true">{paths}</svg>')
+
+
+CHEV = '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>'
+IC_PHONE = icon('<path d="M21 16.5v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 1.1 3.8 2 2 0 0 1 3.1 1.6h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L7.1 9.5a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/>')
+IC_PIN = icon('<path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>')
+IC_DOC = icon('<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/>')
+IC_DIG = icon('<path d="M3 20h18M5 20v-4h9v4M7 16v-3h4l2 3M13 13l4-7 4 3-3 4"/>')
+IC_MAIL = icon('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>')
+STEP_ICONS = [IC_PHONE, IC_PIN, IC_DOC, IC_DIG]
+
+
 def img(src, alt="", pos="50% 50%", sizes="100vw", lazy=True):
     return (f'<img src="img/{src}.jpg" srcset="img/{src}-s.jpg 800w, img/{src}.jpg 1800w" sizes="{sizes}" '
             f'alt="{E(alt)}"{" loading=\"lazy\"" if lazy else " fetchpriority=\"high\""} decoding="async" style="object-position:{pos}">')
@@ -270,7 +284,7 @@ def page(name, title, desc, main, home=False, image="hero-grav"):
 <meta property="og:image" content="{SITE_URL}img/{image}.jpg">
 <meta name="theme-color" content="#ffffff">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="assets/site.css?v={ver("assets/site.css")}">
 <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
 {jsonld() if home else ''}
@@ -286,7 +300,8 @@ def page(name, title, desc, main, home=False, image="hero-grav"):
 
 def card(s):
     return (f'<li class="card"><a href="tjanst-{s["slug"]}.html">{photo(s["photo"], s["alt"], s["pos"], "(min-width: 960px) 33vw, 100vw")}'
-            f'<h3>{s["title"]}</h3><p>{s["short"]}</p><span class="more">Läs mer</span></a></li>')
+            f'<div class="card-body"><h3>{s["title"]}</h3><p>{s["short"]}</p>'
+            f'<span class="more">Läs mer om {s["title"].lower()} {CHEV}</span></div></a></li>')
 
 
 def also_pills(skip=None):
@@ -317,26 +332,47 @@ def quote_form():
 # --- Start page -----------------------------------------------------------------------------------------------------
 def index():
     cards = "".join(card(s) for s in CARDS)
-    steps = "".join(f"<li><b>{t}</b> {d}</li>" for t, d in STEPS)
+    steps = "".join(f'<li><div class="step-top"><span class="step-ic">{STEP_ICONS[i]}</span><span class="step-n">{i + 1:02d}</span></div>'
+                    f"<h3>{t}</h3><p>{d}</p></li>" for i, (t, d) in enumerate(STEPS))
     faq = "".join(f"<details><summary>{q}</summary><p>{a}</p></details>" for q, a in FAQ)
     hire = "".join(f"<li>{m}</li>" for m in HIRE)
     trust = "".join(f"<li>{t}</li>" for t in [f"Medlem i Maskinentreprenörerna sedan {MEMBER_SINCE}",
                                               "Kollektivavtal: Entreprenadmaskinavtalet", "Kollektivavtal: Tjänstemän",
                                               f"Org.nr {ORG_NR}"])
+    stats = "".join(f"<li><b>{n}</b><span>{t}</span></li>" for n, t in [
+        (MEMBER_SINCE, "Medlem i Maskinentreprenörerna"), ("2", "Kollektivavtal"), (str(len(SERVICES)), "Tjänster inom mark och maskin")])
     intro_links = " ".join(f'<a class="pill pill-dark" href="tjanst-{s["slug"]}.html">{s["title"]}</a>' for s in CARDS[:3])
 
     main = f'''<section class="hero" id="top" aria-labelledby="hero-h">
   <div class="hero-ph">{img("hero-grav", "Grävmaskin på en arbetsplats", "60% 50%", lazy=False)}</div>
   <div class="wrap hero-in">
+    <p class="eyebrow">Maskinentreprenör · Olskroken, Göteborg</p>
     <h1 id="hero-h">Markarbeten och maskintjänster i Göteborg</h1>
     <p>{SHORT} gräver, dränerar och bygger grunder åt både företag och privatpersoner – i Göteborg med omnejd.</p>
-    <div class="btns">{call_btn()}<a class="pill pill-dark" href="#offert">Begär offert</a></div>
+    <div class="btns">{call_btn()}<a class="pill pill-dark" href="#offert">Begär offert {CHEV}</a></div>
   </div>
   <span class="hero-note">Illustrationsbild</span>
 </section>
 
 <section class="trust" aria-label="Om företaget">
   <div class="wrap"><ul>{trust}</ul></div>
+</section>
+
+<section class="sec" id="tjanster" aria-labelledby="tj-h">
+  <div class="wrap">
+    <h2 id="tj-h">Våra tjänster</h2>
+    <a class="small-link" href="#sa-gar-det-till">Så går det till {CHEV}</a>
+    <ul class="cards">{cards}</ul>
+    <h3 class="also-h">Vi utför också</h3>
+    <div class="btns">{also_pills()}</div>
+  </div>
+</section>
+
+<section class="stats" aria-labelledby="st-h">
+  <div class="wrap">
+    <h2 id="st-h">Antonsson i siffror</h2>
+    <ul>{stats}</ul>
+  </div>
 </section>
 
 <section class="sec" aria-labelledby="intro-h">
@@ -350,66 +386,77 @@ def index():
   </div>
 </section>
 
-<section class="sec tint" id="tjanster" aria-labelledby="tj-h">
-  <div class="wrap">
-    <h2 id="tj-h">Våra tjänster</h2>
-    <ul class="cards">{cards}</ul>
-    <h3 class="also-h">Vi utför också</h3>
-    <div class="btns">{also_pills()}</div>
-  </div>
-</section>
-
-<section class="sec band" id="maskin" aria-labelledby="ut-h">
-  <div class="wrap narrow center">
-    <h2 id="ut-h">Maskin med förare – per timme eller dag</h2>
-    <p class="lead">Behöver du bara en maskin och någon som kan köra den? Vi kommer ut och hjälper till.</p>
-    <ul class="machines">{hire}</ul>
-    <div class="btns">{call_btn()}<a class="pill pill-light" href="tjanst-maskin-med-forare.html">Läs mer</a></div>
-  </div>
-</section>
-
-<section class="sec" id="om-oss" aria-labelledby="om-h">
-  <div class="wrap split">
-    {photo("om-oss", "Grävmaskin i snö framför granskog")}
-    <div>
-      <h2 id="om-h">Ett lokalt maskinföretag från Olskroken</h2>
-      <p class="lead">{NAME} är ett mark- och maskinföretag med bas i Olskroken i Göteborg. Vi har kollektivavtal och är medlemmar i Maskinentreprenörerna sedan {MEMBER_SINCE}. Vi planerar noggrant, håller det vi lovar och följer upp arbetet tills det är klart.</p>
-      <h3>Så går det till</h3>
-      <ol class="steps">{steps}</ol>
-      <div class="btns">{call_btn()}</div>
+<section class="sec feature-sec" id="maskin" aria-labelledby="ut-h">
+  <div class="wrap feature">
+    <div class="feature-ph">{img("uthyrning", "Gul grävmaskin på en grushög i skogen", "50% 55%", "(min-width: 960px) 90vw, 100vw")}</div>
+    <div class="feature-box">
+      <h2 id="ut-h">Maskin med förare – per timme eller dag</h2>
+      <p>Behöver du bara en maskin och någon som kan köra den? Vi kommer ut och hjälper till.</p>
+      <ul class="machines">{hire}</ul>
+      <div class="btns"><a class="pill pill-outline" href="tjanst-maskin-med-forare.html">Läs mer om maskin med förare {CHEV}</a></div>
     </div>
   </div>
 </section>
 
-<section class="sec tint" id="kontakt" aria-labelledby="kt-h">
-  <div class="wrap narrow">
-    <h2 id="kt-h">Bli kontaktad av {SHORT}</h2>
-    <p class="lead">Fyll i formuläret så hör vi av oss. Vill du hellre ringa eller mejla går det lika bra: <a href="mailto:{EMAIL}">{EMAIL}</a>.</p>
-    <div class="btns">{call_btn()}</div>
-    <div id="offert">{quote_form()}</div>
+<section class="sec surface" id="om-oss" aria-labelledby="om-h">
+  <div class="wrap split split-rev">
+    <div>
+      <h2 id="om-h">Om oss</h2>
+      <a class="small-link" href="#kontakt">Kontakta oss {CHEV}</a>
+      <p class="lead-b">{NAME} är ett mark- och maskinföretag med bas i Olskroken i Göteborg.</p>
+      <p>Vi har kollektivavtal och är medlemmar i Maskinentreprenörerna sedan {MEMBER_SINCE}. Vi planerar noggrant, håller det vi lovar och följer upp arbetet tills det är klart.</p>
+      <div class="btns">{call_btn()}</div>
+    </div>
+    {photo("om-oss", "Grävmaskin i snö framför granskog")}
   </div>
 </section>
 
-<section class="sec" id="fragor" aria-labelledby="fq-h">
+<section class="sec" id="sa-gar-det-till" aria-labelledby="sg-h">
+  <div class="wrap">
+    <h2 id="sg-h">Så går det till</h2>
+    <p class="sub">Fyra tydliga steg från första kontakt till färdigt jobb.</p>
+    <ol class="steps">{steps}</ol>
+  </div>
+</section>
+
+<section class="sec" id="kontakt" aria-labelledby="kt-h">
+  <div class="wrap contact">
+    <div>
+      <h2 id="kt-h">Kontakta oss</h2>
+      <p class="sub">Hör av dig så återkommer vi så snart vi kan. Vill du hellre ringa går det lika bra.</p>
+      <ul class="contact-list">
+        <li>{IC_PHONE}<div><small>Telefon</small><a href="tel:{TEL}">{PHONE}</a></div></li>
+        <li>{IC_MAIL}<div><small>E-post</small><a href="mailto:{EMAIL}">{EMAIL}</a></div></li>
+        <li>{IC_PIN}<div><small>Adress</small>{ADDR}</div></li>
+      </ul>
+      <p class="small">Org.nr {ORG_NR}</p>
+      <div class="btns">{call_btn()}</div>
+    </div>
+    <div class="form-card" id="offert">
+      <h3>Begär offert</h3>
+      {quote_form()}
+    </div>
+  </div>
+</section>
+
+<section class="sec surface" id="fragor" aria-labelledby="fq-h">
   <div class="wrap narrow">
     <h2 id="fq-h">Vanliga frågor</h2>
     <div class="faq">{faq}</div>
   </div>
 </section>
 
-<section class="sec tint seo" aria-labelledby="seo-h">
+<section class="sec seo" aria-labelledby="seo-h">
   <div class="wrap narrow">
     <h2 id="seo-h">Markentreprenör i Göteborg</h2>
     <p>{SHORT} är en markentreprenör med bas i Olskroken som jobbar i hela Göteborgsregionen. Vi gör <a href="tjanst-va-arbeten.html">VA-arbeten</a> och <a href="tjanst-draneringar.html">dräneringar</a> för villor och fastigheter, och bygger <a href="tjanst-husgrunder.html">husgrunder</a> för hus, garage och lokaler.</p>
     <p>Vi anlägger också <a href="tjanst-parkeringsytor.html">parkeringsytor</a>, utför <a href="tjanst-sten-och-murarbeten.html">sten- och murarbeten</a>, sköter <a href="tjanst-schakt-och-transport.html">schakt och transport</a> och bygger och reparerar <a href="tjanst-infrastruktur.html">vägar</a>. Behöver du bara en maskin kan du hyra <a href="tjanst-maskin-med-forare.html">maskin med förare</a>. Ring {PHONE} eller <a href="#offert">begär en offert</a>.</p>
-    <h3>Hitta hit</h3>
-    <p>{NAME}, {ADDR}.</p>
-    <div class="btns"><a class="pill pill-accent" href="{MAPS_LINK}" target="_blank" rel="noopener">Öppna i Google Maps</a></div>
   </div>
 </section>
 
 <section class="map" aria-label="Karta">
   <iframe src="{MAP_EMBED}" title="Karta: {ADDR}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+  <div class="map-bar"><div class="wrap"><span>Kontor: {ADDR}</span><a href="{MAPS_LINK}" target="_blank" rel="noopener">Öppna i Google Maps {CHEV}</a></div></div>
 </section>'''
     page("index.html", f"Markentreprenad i Göteborg – VA, dränering, grunder, maskin med förare | {NAME}",
          f"{NAME} utför VA-arbeten, dräneringar, husgrunder, parkeringsytor och vägar i Göteborg med omnejd. Maskin med förare per timme eller dag. Ring {PHONE}.",
