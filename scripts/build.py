@@ -156,17 +156,17 @@ STEPS = [
 
 # --- Markup helpers -------------------------------------------------------------------------------------------------
 E = html.escape
-PHONE_ICON = ('<svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+PHONE_ICON = ('<svg class="pi" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
               '<path d="M21 16.5v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 1.1 3.8 2 2 0 0 1 3.1 1.6h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L7.1 9.5a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/>'
               '<path d="M15 2.5a6.5 6.5 0 0 1 6.5 6.5M15 6a3 3 0 0 1 3 3"/></svg>')
 
 
 def icon(paths):
-    return ('<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" '
+    return ('<svg class="ic" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" '
             f'stroke-linejoin="round" aria-hidden="true">{paths}</svg>')
 
 
-CHEV = '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>'
+CHEV = '<svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>'
 IC_PHONE = icon('<path d="M21 16.5v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 1.1 3.8 2 2 0 0 1 3.1 1.6h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L7.1 9.5a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/>')
 IC_PIN = icon('<path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>')
 IC_DOC = icon('<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/>')
@@ -185,10 +185,9 @@ def photo(src, alt, pos="50% 50%", sizes="(min-width: 960px) 50vw, 100vw"):
     return f'<figure class="ph">{img(src, alt, pos, sizes)}<figcaption>Illustrationsbild</figcaption></figure>'
 
 
-# Antonsson's own logo (docs/img/logo.png, with a WebP copy for browsers that take it).
+# Antonsson's own logo as a PNG with a transparent background (docs/img/logo.png).
 def logo():
-    return ('<picture><source srcset="img/logo.webp" type="image/webp">'
-            f'<img class="logo-img" src="img/logo.png" width="900" height="174" alt="{NAME}"></picture>')
+    return f'<img class="logo-img" src="img/logo.png" width="900" height="175" alt="{NAME}">'
 
 
 def call_btn(label=None, cls=""):
@@ -286,7 +285,9 @@ def page(name, title, desc, main, home=False, image="hero-grav"):
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="assets/site.css?v={ver("assets/site.css")}">
-<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="img/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="img/favicon.png" type="image/png" sizes="512x512">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
 {jsonld() if home else ''}
 </head>
 <body>
@@ -336,9 +337,6 @@ def index():
                     f"<h3>{t}</h3><p>{d}</p></li>" for i, (t, d) in enumerate(STEPS))
     faq = "".join(f"<details><summary>{q}</summary><p>{a}</p></details>" for q, a in FAQ)
     hire = "".join(f"<li>{m}</li>" for m in HIRE)
-    trust = "".join(f"<li>{t}</li>" for t in [f"Medlem i Maskinentreprenörerna sedan {MEMBER_SINCE}",
-                                              "Kollektivavtal: Entreprenadmaskinavtalet", "Kollektivavtal: Tjänstemän",
-                                              f"Org.nr {ORG_NR}"])
     stats = "".join(f"<li><b>{n}</b><span>{t}</span></li>" for n, t in [
         (MEMBER_SINCE, "Medlem i Maskinentreprenörerna"), ("2", "Kollektivavtal"), (str(len(SERVICES)), "Tjänster inom mark och maskin")])
     intro_links = " ".join(f'<a class="pill pill-dark" href="tjanst-{s["slug"]}.html">{s["title"]}</a>' for s in CARDS[:3])
@@ -352,10 +350,6 @@ def index():
     <div class="btns">{call_btn()}<a class="pill pill-dark" href="#offert">Begär offert {CHEV}</a></div>
   </div>
   <span class="hero-note">Illustrationsbild</span>
-</section>
-
-<section class="trust" aria-label="Om företaget">
-  <div class="wrap"><ul>{trust}</ul></div>
 </section>
 
 <section class="sec" id="tjanster" aria-labelledby="tj-h">

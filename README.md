@@ -3,10 +3,9 @@
 Webbplats för Antonsson Entreprenad AB (mark, anläggning och maskintjänster i Göteborg med omnejd). Koden är
 exporterad från Ohan Entreprenad-sajten och lite annorlunda:
 
-- Antonssons egen logga (`docs/img/logo.png` / `logo.webp`) i ett **vitt** sidhuvud med en tunn blå linje, och på en
+- Antonssons egen logga (`docs/img/logo.png`, PNG med genomskinlig bakgrund; favicon i `favicon.png`, `favicon-32.png`, `apple-touch-icon.png`) i ett **vitt** sidhuvud med en tunn blå linje, och på en
   vit platta i den mörka sidfoten.
 - Accentfärgen är loggans blå (`#006cb7`) i stället för gult; grafitgrått (`#2e2e30`) för sidfot och sekundära knappar.
-- En blå **förtroenderad** under hero: medlem i Maskinentreprenörerna sedan 2024, kollektivavtal och org.nr.
 - ”Maskinuthyrning” är ersatt av **Maskin med förare** (mörk sektion på startsidan + egen sida).
 - Nya rubriker och omskrivna texter, frågan ”Har ni kollektivavtal?” i FAQ.
 
